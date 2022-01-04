@@ -2,6 +2,7 @@ package com.bignerdranch.android.geoquiz
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -28,20 +29,28 @@ class MainActivity : AppCompatActivity() {
 
         trueButton.setOnClickListener { view: View ->
             //버튼의 응답 처리
-            Toast.makeText(
+            val trueToast : Toast = Toast.makeText(
                 this,
                 R.string.correct_toast,
                 Toast.LENGTH_SHORT)
-                .show()
+
+            //챌린지 1(R 버전부터는 setGravity를 지원하지 않는다 한다. 따라서 대안으로 스낵바를 사용하는게 좋다고 함)
+            trueToast.setGravity(Gravity.TOP, Gravity.CENTER, 100)
+
+            trueToast.show()
         }
 
         falseButton.setOnClickListener { view: View ->
             //버튼의 응답 처리
-            Toast.makeText(
+            val falseToast = Toast.makeText(
                 this,
                 R.string.incorrect_toast,
                 Toast.LENGTH_SHORT)
-                .show()
+
+            //챌린지 1(R 버전부터는 setGravity를 지원하지 않는다 한다. 따라서 대안으로 스낵바를 사용하는게 좋다고 함)
+            falseToast.setGravity(Gravity.TOP, Gravity.CENTER, 100)
+
+            falseToast.show()
         }
     }
 }
