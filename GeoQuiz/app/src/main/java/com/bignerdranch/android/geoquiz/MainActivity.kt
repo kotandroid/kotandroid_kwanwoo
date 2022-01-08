@@ -10,9 +10,11 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_main.*
 
 private const val TAG = "MainActivity"
+private const val KEY_INDEX = "index"
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,22 +24,17 @@ class MainActivity : AppCompatActivity() {
     // private lateinit var previousButton: ImageButton
     private lateinit var questionTextView: TextView
 
-    private val questionBank = listOf( //문제 리스트
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true))
-
-    private var currentIndex = 0 // 문제 인덱스
-    private var score = 0.0 // 챌린지 3-2 전체 점수
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProvider(this).get(QuizViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
 
+        val currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
+        quizViewModel.currentIndex = currentIndex
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
         nextButton = findViewById(R.id.next_button)
@@ -80,11 +77,11 @@ class MainActivity : AppCompatActivity() {
 
         nextButton.setOnClickListener {
             //챌린지 3-2 (마지막 문제를 푼 후 next 버튼을 눌렀을 때 점수 출력)
-            if (currentIndex == 5) {
-                val totalScore = "점수 : " + (score/6*100).toString() + "%"
-                Toast.makeText(this, totalScore, Toast.LENGTH_SHORT).show()
-            }
-            currentIndex = (currentIndex + 1) % questionBank.size
+//            if (currentIndex == 5) {
+//                val totalScore = "점수 : " + (score/6*100).toString() + "%"
+//                Toast.makeText(this, totalScore, Toast.LENGTH_SHORT).show()
+//            }
+            quizViewModel.moveToNext()
             updateQuestion()
         }
 
@@ -115,6 +112,12 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onPause() called")
     }
 
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+        Log.d(TAG, "onSaveInstanceState")
+        savedInstanceState.putInt(KEY_INDEX, quizViewModel.currentIndex)
+    }
+
     override fun onStop() {
         super.onStop()
         Log.d(TAG, "onStop() called")
@@ -126,27 +129,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
+        val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId) //question_text_view.text = "" 와 같이 id를 바로 사용 가능
         //챌린지 3-1(문제를 업데이트 할때 정답을 맞췄는지 여부에 따라 버튼을 활성화 비활성화)
-        if (questionBank[currentIndex].correct == true) {
-            trueButton.setEnabled(false)
-            falseButton.setEnabled(false)
-        } else {
-            trueButton.setEnabled(true)
-            falseButton.setEnabled(true)
-        }
+//        if (questionBank[currentIndex].correct == true) {
+//            trueButton.setEnabled(false)
+//            falseButton.setEnabled(false)
+//        } else {
+//            trueButton.setEnabled(true)
+//            falseButton.setEnabled(true)
+//        }
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
+        val correctAnswer = quizViewModel.currentQuestionAnswer
 
         val messageResId = if (userAnswer == correctAnswer) {
-            questionBank[currentIndex].correct = true //챌린지 3-1(정답 맞춘 경우 true로 변경)
-            score += 1 // 정답일 경우 맞춘 정답 수 증가
-            //정답인 경우 버튼 비활성화
-            trueButton.setEnabled(false)
-            falseButton.setEnabled(false)
+//            questionBank[currentIndex].correct = true //챌린지 3-1(정답 맞춘 경우 true로 변경)
+//            score += 1 // 정답일 경우 맞춘 정답 수 증가
+//            //정답인 경우 버튼 비활성화
+//            trueButton.setEnabled(false)
+//            falseButton.setEnabled(false)
             R.string.correct_toast
         } else {
             R.string.incorrect_toast
