@@ -24,6 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
+            android:clickable="true"
             android:text="@string/true_button" />
 
         <Button
@@ -31,6 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
+            android:clickable="false"
             android:text="@string/false_button" />
 
     </LinearLayout>

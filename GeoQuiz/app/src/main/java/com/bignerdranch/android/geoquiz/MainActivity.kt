@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         Question(R.string.question_asia, true))
 
     private var currentIndex = 0 // 문제 인덱스
+    private var score = 0.0 // 챌린지 3-2 전체 점수
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +79,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         nextButton.setOnClickListener {
+            //챌린지 3-2 (마지막 문제를 푼 후 next 버튼을 눌렀을 때 점수 출력)
+            if (currentIndex == 5) {
+                val totalScore = "점수 : " + (score/6*100).toString() + "%"
+                Toast.makeText(this, totalScore, Toast.LENGTH_SHORT).show()
+            }
             currentIndex = (currentIndex + 1) % questionBank.size
             updateQuestion()
         }
@@ -122,12 +128,25 @@ class MainActivity : AppCompatActivity() {
     private fun updateQuestion() {
         val questionTextResId = questionBank[currentIndex].textResId
         questionTextView.setText(questionTextResId) //question_text_view.text = "" 와 같이 id를 바로 사용 가능
+        //챌린지 3-1(문제를 업데이트 할때 정답을 맞췄는지 여부에 따라 버튼을 활성화 비활성화)
+        if (questionBank[currentIndex].correct == true) {
+            trueButton.setEnabled(false)
+            falseButton.setEnabled(false)
+        } else {
+            trueButton.setEnabled(true)
+            falseButton.setEnabled(true)
+        }
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
         val correctAnswer = questionBank[currentIndex].answer
 
         val messageResId = if (userAnswer == correctAnswer) {
+            questionBank[currentIndex].correct = true //챌린지 3-1(정답 맞춘 경우 true로 변경)
+            score += 1 // 정답일 경우 맞춘 정답 수 증가
+            //정답인 경우 버튼 비활성화
+            trueButton.setEnabled(false)
+            falseButton.setEnabled(false)
             R.string.correct_toast
         } else {
             R.string.incorrect_toast
