@@ -11,6 +11,7 @@ import android.widget.TextView
 
 const val EXTRA_ANSWER_SHOWN = "com.bignerdranch.android.geoquiz.answer_shown"
 private const val EXTRA_ANSWER_IS_TRUE = "com.bignerdranch.android.geoquiz.answer_is_true"
+private const val KEY_CHEAT = "cheat"
 
 class CheatActivity : AppCompatActivity() {
 
@@ -23,11 +24,23 @@ class CheatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cheat)
 
+        //챌린지 6-1 sis 저장된 값 가져오기
+        val isAnswerShown = savedInstanceState?.getBoolean(KEY_CHEAT, false) ?: false
         answerIsTrue = intent.getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false)
         answerTextView = findViewById(R.id.answer_text_view)
         showAnswerButton = findViewById(R.id.show_answer_button)
 
         showAnswerButton.setOnClickListener {
+            val answerText = when {
+                answerIsTrue -> R.string.true_button
+                else -> R.string.false_button
+            }
+            answerTextView.setText(answerText)
+            setAnswerShownResult(true)
+        }
+
+        // 챌린지 6-1 장치회전 또는 프로세스 종료시 유아이 상태 보존!!
+        if (isAnswerShown) {
             val answerText = when {
                 answerIsTrue -> R.string.true_button
                 else -> R.string.false_button
@@ -50,5 +63,11 @@ class CheatActivity : AppCompatActivity() {
                 putExtra(EXTRA_ANSWER_IS_TRUE, answerIsTrue)
             }
         }
+    }
+
+    //챌린지 6-1 SIS 사용
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+        savedInstanceState.putBoolean(KEY_CHEAT, answerIsTrue)
     }
 }
