@@ -53,8 +53,7 @@ class CheatActivity : AppCompatActivity() {
         }
 
         //챌린지 7-1
-        val apiLevel = "API 레벨 " + Build.VERSION.SDK_INT.toString()
-        apiLevelTextView.text = apiLevel  // setText()도 사용 가능
+        apiLevelTextView.text = "API 레벨 ${Build.VERSION.SDK_INT}"  // setText()도 사용 가능
     }
 
     private fun setAnswerShownResult(isAnswerShown: Boolean) {

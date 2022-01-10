@@ -19,6 +19,7 @@ class QuizViewModel : ViewModel(){
     var cheatList = arrayListOf(false, false, false, false, false, false)
     var currentIndex = 0 // 문제 인덱스
     var score = 0.0 // 챌린지 3-2 전체 점수
+    var restCheat = 3 //챌린지 7-2 남은 컨닝 횟수
 
     val currentQuestionAnswer: Boolean
         get() = questionBank[currentIndex].answer

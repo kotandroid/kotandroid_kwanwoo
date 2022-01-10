@@ -16,9 +16,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_main.*
+import org.w3c.dom.Text
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
+private const val KEY_REST = "rest_cheat"
 private const val REQUEST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
@@ -29,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     // private lateinit var previousButton: ImageButton
     private lateinit var cheatButton: Button
     private lateinit var questionTextView: TextView
+    private lateinit var restCheatTextView: TextView
 
     private val quizViewModel: QuizViewModel by lazy {
         ViewModelProvider(this).get(QuizViewModel::class.java)
@@ -40,13 +43,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
+        val restCheat = savedInstanceState?.getInt(KEY_REST, 3) ?: 3
         quizViewModel.currentIndex = currentIndex
+        quizViewModel.restCheat = restCheat
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
         nextButton = findViewById(R.id.next_button)
         // previousButton = findViewById(R.id.previous_button)
         cheatButton = findViewById(R.id.cheat_button)
         questionTextView = findViewById(R.id.question_text_view)
+        restCheatTextView = findViewById(R.id.rest_cheat_text_view)
 
 //      true_button.setOnClickListener { view: View ->
 //            build.grdle의 plugin에 (id 'kotlin-android-extensions')를 추가하면 바로 뷰의 id에 접근 가능
@@ -115,6 +121,8 @@ class MainActivity : AppCompatActivity() {
 //        }
 
         updateQuestion()
+
+        checkCheatCount(quizViewModel.restCheat)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -125,7 +133,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (requestCode == REQUEST_CODE_CHEAT) {
-            quizViewModel.cheatList[quizViewModel.currentIndex] = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+            val cheatAnswer = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+            if (cheatAnswer) {
+                quizViewModel.restCheat -= 1
+                quizViewModel.cheatList[quizViewModel.currentIndex] = cheatAnswer
+
+                checkCheatCount(quizViewModel.restCheat)
+            }
         }
     }
 
@@ -148,6 +162,7 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(savedInstanceState)
         Log.d(TAG, "onSaveInstanceState")
         savedInstanceState.putInt(KEY_INDEX, quizViewModel.currentIndex)
+        savedInstanceState.putInt(KEY_REST, quizViewModel.restCheat)
     }
 
     override fun onStop() {
@@ -193,5 +208,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun checkCheatCount(cheatCount: Int) {
+        val cheatText = "남은 컨닝 횟수: $cheatCount"
+        restCheatTextView.text = cheatText
+
+        if (cheatCount == 0) {
+            cheatButton.setEnabled(false)
+        }
     }
 }

@@ -39,7 +39,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="20dp"
         android:text="@string/cheat_button" />
+
+    <TextView
+        android:id="@+id/rest_cheat_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        tools:text="남은 컨닝 횟수" />
 
     <Button
         android:id="@+id/next_button"
