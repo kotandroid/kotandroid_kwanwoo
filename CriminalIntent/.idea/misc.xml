@@ -5,6 +5,8 @@
       <map>
         <entry key="..\:/Users/kkw27/AndroidStudioProjects/kotandroid_kwanwoo/CriminalIntent/app/src/main/res/layout/activity_main.xml" value="0.290625" />
         <entry key="..\:/Users/kkw27/AndroidStudioProjects/kotandroid_kwanwoo/CriminalIntent/app/src/main/res/layout/fragment_crime.xml" value="0.290625" />
+        <entry key="..\:/Users/kkw27/AndroidStudioProjects/kotandroid_kwanwoo/CriminalIntent/app/src/main/res/layout/fragment_crime_list.xml" value="0.290625" />
+        <entry key="..\:/Users/kkw27/AndroidStudioProjects/kotandroid_kwanwoo/CriminalIntent/app/src/main/res/layout/list_item_crime.xml" value="0.290625" />
       </map>
     </option>
   </component>
