@@ -12,7 +12,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
@@ -74,6 +76,7 @@ class CrimeListFragment : Fragment() {
 
     private fun updateUI(crimes: List<Crime>) {
         adapter = CrimeAdapter(crimes)
+        adapter?.submitList(crimes) // 챌린지 12
         crimeRecyclerView.adapter = adapter
     }
 
@@ -97,6 +100,7 @@ class CrimeListFragment : Fragment() {
         }
 
         fun bind(crime: Crime) {
+            Log.d("bind", "bind")
             this.crime = crime
             titleTextView.text = this.crime.title
             // dateTextView.text = this.crime.date.toString() // 기존 날짜 출력 형식
@@ -115,7 +119,7 @@ class CrimeListFragment : Fragment() {
     }
 
     private inner class CrimeAdapter(var crimes: List<Crime>)
-        : RecyclerView.Adapter<CrimeHolder>() {
+        : ListAdapter<Crime, CrimeHolder>(CrimeDiffUtil()) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
             return if (viewType == 0) { //경찰에 연락 버튼이 없는 뷰
