@@ -28,7 +28,7 @@ class CrimeListFragment : Fragment() {
     private var callbacks: Callbacks? = null
 
     private lateinit var crimeRecyclerView: RecyclerView
-    private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
+    private var adapter: CrimeAdapter? = CrimeAdapter()
 
     private val crimeListViewModel: CrimeListViewModel by lazy {
         ViewModelProvider(this).get(CrimeListViewModel::class.java)
@@ -95,9 +95,9 @@ class CrimeListFragment : Fragment() {
     }
 
     private fun updateUI(crimes: List<Crime>) {
-        adapter = CrimeAdapter(crimes)
+        //adapter = CrimeAdapter().submitList(crimes)
         adapter?.submitList(crimes) // 챌린지 12
-        crimeRecyclerView.adapter = adapter
+        //crimeRecyclerView.adapter = adapter
     }
 
     private inner class CrimeHolder(view: View)
@@ -120,7 +120,7 @@ class CrimeListFragment : Fragment() {
         }
 
         fun bind(crime: Crime) {
-            Log.d("bind", "bind")
+            Log.d("bind", crime.title)
             this.crime = crime
             titleTextView.text = this.crime.title
             // dateTextView.text = this.crime.date.toString() // 기존 날짜 출력 형식
@@ -138,7 +138,7 @@ class CrimeListFragment : Fragment() {
 
     }
 
-    private inner class CrimeAdapter(var crimes: List<Crime>)
+    private inner class CrimeAdapter
         : ListAdapter<Crime, CrimeHolder>(CrimeDiffUtil()) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
@@ -151,11 +151,12 @@ class CrimeListFragment : Fragment() {
             }
         }
 
-        override fun getItemCount() = crimes.size
+        //override fun getItemCount() = crimes.size
 
         override fun onBindViewHolder(holder: CrimeHolder, position: Int) {
-            val crime = crimes[position]
-            holder.bind(crime)
+            //val crime = crimes[position]
+            Log.d("position", position.toString())
+            holder.bind(getItem(position))
         }
         //뷰 타입 리턴(챌린지 9)
 //        override fun getItemViewType(position: Int): Int {
