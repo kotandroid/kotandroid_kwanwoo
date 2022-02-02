@@ -65,7 +65,7 @@ class CrimeListFragment : Fragment() {
             androidx.lifecycle.Observer { crimes ->
                 crimes.let {
                     Log.i(TAG, "Got crimes ${crimes.size}")
-                    updateUI(crimes)
+                    updateUI(crimes.toMutableList())
                 }
 
             }
@@ -94,7 +94,7 @@ class CrimeListFragment : Fragment() {
         }
     }
 
-    private fun updateUI(crimes: List<Crime>) {
+    private fun updateUI(crimes: MutableList<Crime>) {
         //adapter = CrimeAdapter().submitList(crimes)
         adapter?.submitList(crimes) // 챌린지 12
         //crimeRecyclerView.adapter = adapter
