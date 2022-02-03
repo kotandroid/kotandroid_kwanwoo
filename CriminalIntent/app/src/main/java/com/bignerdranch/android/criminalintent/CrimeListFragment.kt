@@ -60,12 +60,6 @@ class CrimeListFragment : Fragment() {
         crimeRecyclerView.layoutManager = LinearLayoutManager(context)
         crimeRecyclerView.adapter = adapter
 
-        newCrimeButton.setOnClickListener {
-            val crime = Crime()
-            crimeListViewModel.addCrime(crime)
-            callbacks?.onCrimeSelected(crime.id)
-        }
-
         return view
     }
 
@@ -88,6 +82,12 @@ class CrimeListFragment : Fragment() {
 
             }
         )
+
+        newCrimeButton.setOnClickListener {
+            val crime = Crime()
+            crimeListViewModel.addCrime(crime)
+            callbacks?.onCrimeSelected(crime.id)
+        }
     }
 
     override fun onDetach() {
