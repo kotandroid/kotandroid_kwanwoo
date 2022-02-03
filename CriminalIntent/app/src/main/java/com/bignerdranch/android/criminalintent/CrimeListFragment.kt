@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import org.w3c.dom.Text
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,6 +29,8 @@ class CrimeListFragment : Fragment() {
     private var callbacks: Callbacks? = null
 
     private lateinit var crimeRecyclerView: RecyclerView
+    private lateinit var noCrimeTextView: TextView
+    private lateinit var newCrimeButton: Button
     private var adapter: CrimeAdapter? = CrimeAdapter()
 
     private val crimeListViewModel: CrimeListViewModel by lazy {
@@ -51,9 +54,17 @@ class CrimeListFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_crime_list, container, false)
 
+        noCrimeTextView = view.findViewById(R.id.no_crime_textView) as TextView
+        newCrimeButton = view.findViewById(R.id.new_crime_button) as Button
         crimeRecyclerView = view.findViewById(R.id.crime_recycler_view) as RecyclerView
         crimeRecyclerView.layoutManager = LinearLayoutManager(context)
         crimeRecyclerView.adapter = adapter
+
+        newCrimeButton.setOnClickListener {
+            val crime = Crime()
+            crimeListViewModel.addCrime(crime)
+            callbacks?.onCrimeSelected(crime.id)
+        }
 
         return view
     }
@@ -65,6 +76,13 @@ class CrimeListFragment : Fragment() {
             androidx.lifecycle.Observer { crimes ->
                 crimes.let {
                     Log.i(TAG, "Got crimes ${crimes.size}")
+                    if (crimes.isEmpty()) {
+                        noCrimeTextView.visibility = View.VISIBLE
+                        newCrimeButton.visibility = View.VISIBLE
+                    } else {
+                        noCrimeTextView.visibility = View.GONE
+                        newCrimeButton.visibility = View.GONE
+                    }
                     updateUI(crimes.toMutableList())
                 }
 
