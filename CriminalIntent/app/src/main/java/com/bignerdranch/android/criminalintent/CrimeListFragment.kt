@@ -83,6 +83,7 @@ class CrimeListFragment : Fragment() {
             }
         )
 
+        //CrimeFragment에서는 onStart에서 setOnClickListener를 구현
         newCrimeButton.setOnClickListener {
             val crime = Crime()
             crimeListViewModel.addCrime(crime)
