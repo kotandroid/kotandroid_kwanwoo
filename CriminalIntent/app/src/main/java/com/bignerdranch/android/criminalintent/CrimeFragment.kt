@@ -24,9 +24,11 @@ import java.util.*
 private const val TAG = "CrimeFragment"
 private const val ARG_CRIME_ID = "crime_id"
 private const val DIALOG_DATE = "DialogDate"
+private const val DIALOG_IMAGE = "DialogImage"
 private const val REQUEST_DATE = 0
 private const val REQUEST_CONTACT = 1
 private const val REQUEST_PHOTO = 2
+private const val REQUEST_IMAGE = 3
 private const val DATE_FORMAT = "yyyy년 M월 d일 H시 m분, E요일"
 
 class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragment.Callbacks {
@@ -174,11 +176,11 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
             val packageManager: PackageManager = requireActivity().packageManager
 
             val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            val resolvedActivity: ResolveInfo? =
-                packageManager.resolveActivity(captureImage, PackageManager.MATCH_DEFAULT_ONLY)
-            if (resolvedActivity == null) {
-                isEnabled = false
-            }
+//            val resolvedActivity: ResolveInfo? =
+//                packageManager.resolveActivity(captureImage, PackageManager.MATCH_DEFAULT_ONLY)
+//            if (resolvedActivity == null) {
+//                isEnabled = false
+//            }
 
             setOnClickListener {
                 captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
@@ -196,6 +198,11 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
 
                 startActivityForResult(captureImage, REQUEST_PHOTO)
             }
+        }
+
+        photoView.setOnClickListener{
+            ImageDialogFragment.newInstance(photoFile)
+                .show(this@CrimeFragment.parentFragmentManager, DIALOG_IMAGE)
         }
     }
 
