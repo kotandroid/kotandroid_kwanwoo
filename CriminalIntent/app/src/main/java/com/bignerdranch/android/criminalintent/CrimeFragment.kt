@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.*
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -43,6 +44,9 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
     private lateinit var suspectButton: Button
     private lateinit var photoButton: ImageButton
     private lateinit var photoView: ImageView
+
+    private var photoViewWidth = 0
+    private var photoViewHeight = 0
     private val crimeDetailViewModel: CrimeDetailViewModel by lazy {
         ViewModelProvider(this).get(CrimeDetailViewModel::class.java)
     }
@@ -70,6 +74,11 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
         photoButton = view.findViewById(R.id.crime_camera) as ImageButton
         photoView = view.findViewById(R.id.crime_photo) as ImageView
 
+        photoView.viewTreeObserver.addOnGlobalLayoutListener {
+            photoViewWidth = photoView.width
+            photoViewHeight = photoView.height
+        }
+
         return view
     }
 
@@ -88,6 +97,7 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
                 }
             }
         )
+
     }
 
     override fun onStart() {
@@ -204,6 +214,7 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
             ImageDialogFragment.newInstance(photoFile)
                 .show(this@CrimeFragment.parentFragmentManager, DIALOG_IMAGE)
         }
+
     }
 
     override fun onStop() {
@@ -243,7 +254,7 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
 
     private fun updatePhotoView() {
         if (photoFile.exists()) {
-            val bitmap = getScaledBitmap(photoFile.path, requireActivity())
+            val bitmap = getScaledBitmap(photoFile.path, photoViewWidth, photoViewHeight)
             photoView.setImageBitmap(bitmap)
         } else {
             photoView.setImageDrawable(null)
