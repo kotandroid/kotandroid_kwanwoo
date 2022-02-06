@@ -146,11 +146,18 @@ class CrimeListFragment : Fragment() {
             //dateTextView.text = this.crime.date.toString() // 기존 날짜 출력 형식
             //dateTextView.text = SimpleDateFormat("EEEE, MMMM dd, yyyy  ", Locale.getDefault()).format(this.crime.date) //챌린지 10
             dateTextView.text = DateFormat.format("EEEE, MMMM dd, yyyy  ", this.crime.date) //챌린지 17(DateFormat.format을 사용하면 시스템 언어로 날짜가 쿨려된다.)
-            solvedImageView?.visibility = if (crime.isSolved) {
-                View.VISIBLE
-            } else {
-                View.GONE
+            dateTextView.contentDescription = DateFormat.format("yyyy년 MM월 dd일", this.crime.date)
+
+            solvedImageView?.apply {
+                if (crime.isSolved) {
+                    visibility = View.VISIBLE
+                    contentDescription = "범죄 해결됨"
+                } else {
+                    visibility = View.INVISIBLE
+                    contentDescription = "범죄 해결되지 않음"
+                }
             }
+            itemView.contentDescription = this.crime.title + dateTextView.contentDescription + solvedImageView?.contentDescription
         }
 
         override fun onClick(v: View?) {
