@@ -1,5 +1,6 @@
 package com.bignerdranch.android.criminalintent
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,6 +17,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -29,7 +32,6 @@ private const val DIALOG_IMAGE = "DialogImage"
 private const val REQUEST_DATE = 0
 private const val REQUEST_CONTACT = 1
 private const val REQUEST_PHOTO = 2
-private const val REQUEST_IMAGE = 3
 private const val DATE_FORMAT = "yyyy년 M월 d일 H시 m분, E요일"
 
 class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragment.Callbacks {
@@ -44,6 +46,7 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
     private lateinit var suspectButton: Button
     private lateinit var photoButton: ImageButton
     private lateinit var photoView: ImageView
+    private lateinit var callButton: Button
 
     private var photoViewWidth = 0
     private var photoViewHeight = 0
@@ -73,6 +76,7 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
         suspectButton = view.findViewById(R.id.crime_suspect) as Button
         photoButton = view.findViewById(R.id.crime_camera) as ImageButton
         photoView = view.findViewById(R.id.crime_photo) as ImageView
+        callButton = view.findViewById(R.id.call_button) as Button
 
         photoView.viewTreeObserver.addOnGlobalLayoutListener {
             photoViewWidth = photoView.width
@@ -215,6 +219,18 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
                 .show(this@CrimeFragment.parentFragmentManager, DIALOG_IMAGE)
         }
 
+        callButton.setOnClickListener {
+            if (crimeDetailViewModel.suspectNumber != null) {
+                val number = Uri.parse("tel:" + crimeDetailViewModel.suspectNumber)
+                val intent = Intent(Intent.ACTION_DIAL).apply {
+                    data = number
+                }
+                startActivity(intent)
+            } else {
+                Toast.makeText(context, R.string.crime_report_no_suspect, Toast.LENGTH_SHORT).show()
+            }
+        }
+
     }
 
     override fun onStop() {
@@ -286,6 +302,24 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
                     crime.suspect = suspect
                     crimeDetailViewModel.saveCrime(crime)
                     suspectButton.text = suspect
+                }
+
+                if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CONTACTS
+                    ) != PackageManager.PERMISSION_GRANTED){
+                    requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS), 1004)
+                }
+
+                val numberUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+                val numberQuery = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                val numberCursor = requireActivity().contentResolver
+                    .query(numberUri, numberQuery, null, null, null)
+                numberCursor?.use{
+                    if (it.count == 0) {
+                        return
+                    }
+                    it.moveToFirst()
+                    callButton.text = it.getString(0)
+                    crimeDetailViewModel.suspectNumber = it.getString(0)
                 }
             }
 

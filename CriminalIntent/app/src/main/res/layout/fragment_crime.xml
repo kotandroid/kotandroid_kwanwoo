@@ -92,4 +92,10 @@
         android:layout_height="wrap_content"
         android:text="@string/crime_report_text" />
 
+    <Button
+        android:id="@+id/call_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="전화 걸기" />
+
 </LinearLayout>
