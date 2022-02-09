@@ -170,7 +170,7 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
 
         suspectButton.apply {
             val pickContactIntent =
-                Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
+                Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
 
             setOnClickListener {
                 startActivityForResult(pickContactIntent, REQUEST_CONTACT)
@@ -286,7 +286,7 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
             requestCode == REQUEST_CONTACT && data != null -> {
                 val contactUri: Uri = data.data ?: return
                 //쿼리에서 값으로 반환활 필드를 지정한다.
-                val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
+                val queryFields = arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER)
                 //쿼리를 수행한다. contactUri는 콘텐츠 제공자의 테이블을 나타낸다.
                 val cursor = requireActivity().contentResolver
                     .query(contactUri, queryFields, null, null, null)
@@ -302,24 +302,9 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
                     crime.suspect = suspect
                     crimeDetailViewModel.saveCrime(crime)
                     suspectButton.text = suspect
-                }
-
-                if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CONTACTS
-                    ) != PackageManager.PERMISSION_GRANTED){
-                    requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS), 1004)
-                }
-
-                val numberUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
-                val numberQuery = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
-                val numberCursor = requireActivity().contentResolver
-                    .query(numberUri, numberQuery, null, null, null)
-                numberCursor?.use{
-                    if (it.count == 0) {
-                        return
-                    }
-                    it.moveToFirst()
-                    callButton.text = it.getString(0)
-                    crimeDetailViewModel.suspectNumber = it.getString(0)
+                    //완벽하게 기능을 구현하려면 전화번호도 뷰모델이 아닌 데이터베이스에 저장해야 한다.
+                    //여기서는 임시로 뷰모델로 저장하고 기능만 확인하였다.
+                    crimeDetailViewModel.suspectNumber = it.getString(1)
                 }
             }
 
