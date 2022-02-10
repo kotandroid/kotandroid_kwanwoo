@@ -2,6 +2,7 @@ package com.bignerdranch.android.criminalintent
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -17,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.*
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -24,6 +26,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import java.io.File
 import java.util.*
+import kotlin.contracts.contract
 
 private const val TAG = "CrimeFragment"
 private const val ARG_CRIME_ID = "crime_id"
@@ -48,6 +51,8 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
     private lateinit var photoView: ImageView
     private lateinit var callButton: Button
 
+    private lateinit var contractPermission: ActivityResultLauncher<String>
+
     private var photoViewWidth = 0
     private var photoViewHeight = 0
     private val crimeDetailViewModel: CrimeDetailViewModel by lazy {
@@ -59,6 +64,16 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
         crime = Crime()
         val crimeId: UUID = arguments?.getSerializable(ARG_CRIME_ID) as UUID
         crimeDetailViewModel.loadCrime(crimeId)
+
+        contractPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            isGranted ->
+                if(!isGranted) {
+                    val dialog = AlertDialog.Builder(requireContext())
+                    dialog.setTitle("연락처의 권한이 필요합니다")
+                    dialog.setNegativeButton("뒤로", null)
+                    dialog.show()
+                }
+        }
     }
 
     override fun onCreateView(
@@ -78,10 +93,16 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
         photoView = view.findViewById(R.id.crime_photo) as ImageView
         callButton = view.findViewById(R.id.call_button) as Button
 
-        photoView.viewTreeObserver.addOnGlobalLayoutListener {
-            photoViewWidth = photoView.width
-            photoViewHeight = photoView.height
-        }
+        photoView.viewTreeObserver.addOnGlobalLayoutListener(
+            object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    photoViewWidth = photoView.width
+                    photoViewHeight = photoView.height
+
+                    photoView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+            }
+        )
 
         return view
     }
@@ -173,6 +194,10 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks, TimePickerFragmen
                 Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
 
             setOnClickListener {
+                if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CONTACTS)
+                    != PackageManager.PERMISSION_GRANTED){
+                    contractPermission.launch(Manifest.permission.READ_CONTACTS)
+                }
                 startActivityForResult(pickContactIntent, REQUEST_CONTACT)
             }
             //API 30 이상 버전에서는 항상 null이 리턴된다...
