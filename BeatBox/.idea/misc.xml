@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/kkw27/AndroidStudioProjects/kotandroid_kwanwoo/BeatBox/app/src/main/res/drawable/button_beat_box.xml" value="0.2564814814814815" />
+        <entry key="..\:/Users/kkw27/AndroidStudioProjects/kotandroid_kwanwoo/BeatBox/app/src/main/res/drawable/button_beat_box_normal.xml" value="0.2564814814814815" />
+        <entry key="..\:/Users/kkw27/AndroidStudioProjects/kotandroid_kwanwoo/BeatBox/app/src/main/res/drawable/button_beat_box_pressed.xml" value="0.2564814814814815" />
         <entry key="..\:/Users/kkw27/AndroidStudioProjects/kotandroid_kwanwoo/BeatBox/app/src/main/res/layout/activity_main.xml" value="0.290625" />
         <entry key="..\:/Users/kkw27/AndroidStudioProjects/kotandroid_kwanwoo/BeatBox/app/src/main/res/layout/list_item_sound.xml" value="0.2" />
       </map>
