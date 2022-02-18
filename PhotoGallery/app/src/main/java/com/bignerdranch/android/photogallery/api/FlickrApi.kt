@@ -1,6 +1,8 @@
 package com.bignerdranch.android.photogallery.api
 
+import okhttp3.ResponseBody
 import retrofit2.http.GET
+import retrofit2.http.Url
 
 interface FlickrApi {
 
@@ -12,4 +14,7 @@ interface FlickrApi {
                 "&extras=url_s"
     )
     fun fetchPhotos(): retrofit2.Call<FlickrResponse>
+
+    @GET
+    fun fetchUrlBytes(@Url url: String): retrofit2.Call<ResponseBody>
 }
