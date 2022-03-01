@@ -10,6 +10,8 @@ import com.bignerdranch.android.photogallery.api.FlickrApi
 import com.bignerdranch.android.photogallery.api.FlickrResponse
 import com.bignerdranch.android.photogallery.api.PhotoInterceptor
 import com.bignerdranch.android.photogallery.api.PhotoResponse
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -30,9 +32,13 @@ class FlickrFetchr {
             .addInterceptor(PhotoInterceptor())
             .build()
 
+        val gson: Gson = GsonBuilder()
+            .registerTypeAdapter(PhotoResponse::class.java, PhotoDeserializer())
+            .create()
+
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl("https://api.flickr.com/")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .client(client)
             .build()
 
@@ -47,19 +53,20 @@ class FlickrFetchr {
         return fetchPhotoMetadata(flickrApi.searchPhotos(query))
     }
 
-    private fun fetchPhotoMetadata(flickrRequest: Call<FlickrResponse>): LiveData<List<GalleryItem>> {
+    private fun fetchPhotoMetadata(flickrRequest: Call<PhotoResponse>): LiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
 
-        flickrRequest.enqueue(object: Callback<FlickrResponse> {
+        flickrRequest.enqueue(object: Callback<PhotoResponse> {
 
-            override fun onFailure(call: Call<FlickrResponse>, t: Throwable) {
+            override fun onFailure(call: Call<PhotoResponse>, t: Throwable) {
                 Log.e(TAG, "Failed to fetch photos", t)
             }
 
-            override fun onResponse(call: Call<FlickrResponse>, response: Response<FlickrResponse>) {
+            override fun onResponse(call: Call<PhotoResponse>, response: Response<PhotoResponse>) {
                 Log.d(TAG, "Response received")
-                val flickrResponse: FlickrResponse? = response.body()
-                val photoResponse: PhotoResponse? = flickrResponse?.photos
+                //val flickrResponse: FlickrResponse? = response.body()
+                //val photoResponse: PhotoResponse? = flickrResponse?.photos
+                val photoResponse: PhotoResponse? = response.body()
                 var galleryItems: List<GalleryItem> = photoResponse?.galleryItems ?: mutableListOf()
                 galleryItems = galleryItems.filterNot {
                     it.url.isBlank()
