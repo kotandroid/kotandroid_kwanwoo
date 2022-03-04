@@ -72,7 +72,17 @@ class PhotoGalleryFragment: Fragment() {
         val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
 
         photoRecyclerView = view.findViewById(R.id.photo_recycler_view)
-        photoRecyclerView.layoutManager = GridLayoutManager(context, 3)
+        //photoRecyclerView.layoutManager = GridLayoutManager(context, 3)
+        // chapter 24 challenge 3
+        photoRecyclerView.viewTreeObserver.addOnGlobalLayoutListener(
+            object: ViewTreeObserver.OnGlobalLayoutListener{
+                override fun onGlobalLayout() {
+                    photoRecyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    val width = photoRecyclerView.width
+                    val gridColumns = width / 300
+                    photoRecyclerView.layoutManager = GridLayoutManager(context, gridColumns)
+                }
+            })
 
         return view
     }
