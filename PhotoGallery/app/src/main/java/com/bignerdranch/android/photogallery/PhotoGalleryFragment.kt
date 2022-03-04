@@ -1,5 +1,6 @@
 package com.bignerdranch.android.photogallery
 
+import android.app.ProgressDialog
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -9,6 +10,7 @@ import android.os.Handler
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.SearchView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -35,6 +37,7 @@ class PhotoGalleryFragment: Fragment() {
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
     private lateinit var photoRecyclerView: RecyclerView
     private lateinit var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>
+    private lateinit var progressDialog: ProgressDialog // chapter 26 challenge 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +53,12 @@ class PhotoGalleryFragment: Fragment() {
                 photoHolder.bindDrawable(drawable)
             }
         lifecycle.addObserver(thumbnailDownloader.fragmentLifecycleObserver)
+
+        // chapter 26 challenge 2
+        progressDialog = ProgressDialog(requireContext())
+        progressDialog.setTitle("사진 다운로드 중")
+        progressDialog.setMessage("잠시만 기다려 주세요...")
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
     }
 
     override fun onCreateView(
@@ -73,6 +82,7 @@ class PhotoGalleryFragment: Fragment() {
         photoGalleryViewModel.galleryItemLiveData.observe(
             viewLifecycleOwner,
             Observer { galleryItems ->
+                progressDialog.dismiss() // chapter 26 challenge 2
                 photoRecyclerView.adapter = PhotoAdapter(galleryItems)
             })
     }
@@ -99,7 +109,10 @@ class PhotoGalleryFragment: Fragment() {
             setOnQueryTextListener(object: androidx.appcompat.widget.SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(queryText: String): Boolean {
                     Log.d(TAG, "QueryTextSubmit: $queryText")
+                    progressDialog.show() // chapter 26 challenge 2
                     photoGalleryViewModel.fetchPhotos(queryText)
+                    clearFocus() // chapter 26 challenge 1
+                    searchView.onActionViewCollapsed() // chapter 26 challenge 1
                     return true
                 }
 
