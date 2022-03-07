@@ -13,6 +13,7 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 
 private const val ARG_URI = "photo_page_url"
+
 class PhotoPageFragment : VisibleFragment() {
 
     private lateinit var uri: Uri
