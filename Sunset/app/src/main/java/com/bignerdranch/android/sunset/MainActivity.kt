@@ -14,6 +14,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sceneView: View
     private lateinit var sunView: View
     private lateinit var skyView: View
+    private var checkSun: Boolean = true
+
+    private val sunYStart: Float by lazy {
+        sunView.top.toFloat()
+    }
+    private val sunYEnd: Float by lazy {
+        skyView.height.toFloat()
+    }
 
     private val blueSkyColor: Int by lazy {
         ContextCompat.getColor(this, R.color.blue_sky)
@@ -31,16 +39,20 @@ class MainActivity : AppCompatActivity() {
 
         sceneView = findViewById(R.id.scene)
         sunView = findViewById(R.id.sun)
-        skyView= findViewById(R.id.sky)
+        skyView = findViewById(R.id.sky)
 
         sceneView.setOnClickListener {
-            startAnimation()
+            if (checkSun) {
+                startAnimation()
+            } else {
+                startReverseAnimation()
+            }
         }
     }
 
     private fun startAnimation() {
-        val sunYStart = sunView.top.toFloat()
-        val sunYEnd = skyView.height.toFloat()
+        //val sunYStart = sunView.top.toFloat()
+        //val sunYEnd = skyView.height.toFloat()
 
         val heightAnimator = ObjectAnimator
             .ofFloat(sunView, "y", sunYStart, sunYEnd)
@@ -62,5 +74,34 @@ class MainActivity : AppCompatActivity() {
             .with(sunsetSkyAnimator)
             .before(nightSkyAnimator)
         animatorSet.start()
+
+        checkSun = false
+    }
+
+    //chapter 31 challenge 1
+    private fun startReverseAnimation() {
+
+        val heightAnimator = ObjectAnimator
+            .ofFloat(sunView, "y", sunYEnd, sunYStart)
+            .setDuration(3000)
+        heightAnimator.interpolator = AccelerateInterpolator()
+
+        val sunsetSkyAnimator = ObjectAnimator
+            .ofInt(skyView, "backgroundColor", sunsetSkyColor, blueSkyColor)
+            .setDuration(3000)
+        sunsetSkyAnimator.setEvaluator(ArgbEvaluator())
+
+        val nightSkyAnimator = ObjectAnimator
+            .ofInt(skyView, "backgroundColor", nightSkyColor, sunsetSkyColor)
+            .setDuration(1500)
+        nightSkyAnimator.setEvaluator(ArgbEvaluator())
+
+        val animatorSet = AnimatorSet()
+        animatorSet.play(heightAnimator)
+            .with(sunsetSkyAnimator)
+            .after(nightSkyAnimator)
+        animatorSet.start()
+
+        checkSun = true
     }
 }
