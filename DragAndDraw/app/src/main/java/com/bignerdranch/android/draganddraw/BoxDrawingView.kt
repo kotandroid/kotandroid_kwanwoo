@@ -4,18 +4,22 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PointF
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 
 private const val TAG = "BoxDrawingView"
+private const val BOXEN = "BOXEN"
+private const val VIEW_STATE = "VIEW_STATE"
 
 class BoxDrawingView(context: Context, attrs: AttributeSet? = null) :
     View(context, attrs) {
 
     private var currentBox: Box? = null
-    private val boxen = mutableListOf<Box>()
+    private var boxen = mutableListOf<Box>()
     private val boxPaint = Paint().apply {
         color = 0x22ff0000.toInt()
     }
@@ -67,4 +71,5 @@ class BoxDrawingView(context: Context, attrs: AttributeSet? = null) :
             canvas.drawRect(box.left, box.top, box.right, box.bottom, boxPaint)
         }
     }
+
 }
