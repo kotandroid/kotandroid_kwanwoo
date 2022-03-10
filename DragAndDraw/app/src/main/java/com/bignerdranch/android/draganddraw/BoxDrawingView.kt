@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.TextView
 import java.util.ArrayList
 
 private const val TAG = "BoxDrawingView"
@@ -74,17 +75,29 @@ class BoxDrawingView(context: Context, attrs: AttributeSet? = null) :
     }
 
     override fun onSaveInstanceState(): Parcelable {
-        val viewState = super.onSaveInstanceState()
-        val bundle = Bundle()
-        bundle.putParcelable(VIEW_STATE, viewState)
-        bundle.putParcelableArrayList(BOXEN, boxen as ArrayList<Box>)
-        return bundle
+//        val viewState = super.onSaveInstanceState()
+//        val bundle = Bundle()
+//        bundle.putParcelable(VIEW_STATE, viewState)
+//        bundle.putParcelableArrayList(BOXEN, boxen as ArrayList<Box>)
+//        return bundle
+        val superState = super.onSaveInstanceState()
+        val savedState = superState!!.let { SavedState(it) }
+        savedState.boxList = boxen
+
+        return savedState
     }
 
     override fun onRestoreInstanceState(state: Parcelable) {
-        if (state is Bundle){
-            boxen = state.getParcelableArrayList<Box>(BOXEN)?.toMutableList() ?: mutableListOf()
-            super.onRestoreInstanceState(state.getParcelable(VIEW_STATE))
-        }
+//        if (state is Bundle){
+//            boxen = state.getParcelableArrayList<Box>(BOXEN)?.toMutableList() ?: mutableListOf()
+//            super.onRestoreInstanceState(state.getParcelable(VIEW_STATE))
+//        }
+        val savedState = state as SavedState
+        super.onRestoreInstanceState(savedState.superState)
+        boxen = savedState.boxList
+    }
+
+    private inner class SavedState(superState: Parcelable): BaseSavedState(superState) {
+        var boxList: MutableList<Box> = mutableListOf()
     }
 }
