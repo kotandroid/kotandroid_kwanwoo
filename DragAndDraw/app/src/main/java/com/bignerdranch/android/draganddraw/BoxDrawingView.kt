@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import java.util.ArrayList
 
 private const val TAG = "BoxDrawingView"
 private const val BOXEN = "BOXEN"
@@ -72,4 +73,18 @@ class BoxDrawingView(context: Context, attrs: AttributeSet? = null) :
         }
     }
 
+    override fun onSaveInstanceState(): Parcelable {
+        val viewState = super.onSaveInstanceState()
+        val bundle = Bundle()
+        bundle.putParcelable(VIEW_STATE, viewState)
+        bundle.putParcelableArrayList(BOXEN, boxen as ArrayList<Box>)
+        return bundle
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable) {
+        if (state is Bundle){
+            boxen = state.getParcelableArrayList<Box>(BOXEN)?.toMutableList() ?: mutableListOf()
+            super.onRestoreInstanceState(state.getParcelable(VIEW_STATE))
+        }
+    }
 }
