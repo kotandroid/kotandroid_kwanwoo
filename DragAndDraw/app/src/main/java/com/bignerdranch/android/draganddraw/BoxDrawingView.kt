@@ -20,6 +20,10 @@ private const val VIEW_STATE = "VIEW_STATE"
 class BoxDrawingView(context: Context, attrs: AttributeSet? = null) :
     View(context, attrs) {
 
+    init {
+        isSaveEnabled = true
+    }
+
     private var currentBox: Box? = null
     private var boxen = mutableListOf<Box>()
     private val boxPaint = Paint().apply {
@@ -75,29 +79,41 @@ class BoxDrawingView(context: Context, attrs: AttributeSet? = null) :
     }
 
     override fun onSaveInstanceState(): Parcelable {
-//        val viewState = super.onSaveInstanceState()
-//        val bundle = Bundle()
-//        bundle.putParcelable(VIEW_STATE, viewState)
-//        bundle.putParcelableArrayList(BOXEN, boxen as ArrayList<Box>)
-//        return bundle
         val superState = super.onSaveInstanceState()
-        val savedState = superState!!.let { SavedState(it) }
-        savedState.boxList = boxen
+        val state = Bundle().apply {
+            putParcelable(VIEW_STATE, superState)
+            putInt(BOXEN, boxen.size)
+            for (i in 0 until boxen.size){
+                putFloat("BOX_${i}_T", boxen[i].top)
+                putFloat("BOX_${i}_B", boxen[i].bottom)
+                putFloat("BOX_${i}_L", boxen[i].left)
+                putFloat("BOX_${i}_R", boxen[i].right)
+            }
+        }
 
-        return savedState
+        return state
     }
 
     override fun onRestoreInstanceState(state: Parcelable) {
-//        if (state is Bundle){
-//            boxen = state.getParcelableArrayList<Box>(BOXEN)?.toMutableList() ?: mutableListOf()
-//            super.onRestoreInstanceState(state.getParcelable(VIEW_STATE))
-//        }
-        val savedState = state as SavedState
-        super.onRestoreInstanceState(savedState.superState)
-        boxen = savedState.boxList
-    }
-
-    private inner class SavedState(superState: Parcelable): BaseSavedState(superState) {
-        var boxList: MutableList<Box> = mutableListOf()
+        if (state is Bundle) {
+            val boxen_size = state.getInt(BOXEN)
+            for (i in 0 until boxen_size){
+                boxen.add(Box(
+                    // start
+                    PointF(
+                        state.getFloat("BOX_${i}_L"),
+                        state.getFloat("BOX_${i}_T")
+                    )
+                ).apply {
+                    end = PointF(
+                        state.getFloat("BOX_${i}_R"),
+                        state.getFloat("BOX_${i}_B")
+                    )
+                })
+            }
+            super.onRestoreInstanceState(state.getParcelable(VIEW_STATE))
+        } else {
+            super.onRestoreInstanceState(state)
+        }
     }
 }

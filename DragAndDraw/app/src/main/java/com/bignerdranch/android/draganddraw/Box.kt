@@ -8,21 +8,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
-//@Parcelize
-class Box(val start: PointF) {
-
-//    private companion object : Parceler<Box> {
-//        override fun Box.write(parcel: Parcel, flags: Int) {
-//            start.writeToParcel(parcel, 0)
-//        }
-//
-//        override fun create(parcel: Parcel): Box {
-//            // readFromParcel 사용하는거 같은데 잘 안됨...
-//            val point = PointF()
-//            point.readFromParcel(parcel)
-//            return Box(point)
-//        }
-//    }
+class Box(val start: PointF){
 
     var end: PointF = start
 
